@@ -1,0 +1,25 @@
+<p style="color: green"><%= notice %></p>
+
+<h1>Units</h1>
+
+<table class="table table-dark table-hover table-striped">
+  <thead>
+    <tr>
+      <th scope="col">SN</th>
+      <th scope="col">Description</th>
+      <th scope="col">Function</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @units.each do |unit| %>
+      <tr>
+        <td><%=unit.serial_number%></td>
+        <td><%=unit.description%></td>
+        <td><%= link_to "Show this unit", unit %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= link_to "New unit", new_unit_path, class:"btn btn-primary" %>
