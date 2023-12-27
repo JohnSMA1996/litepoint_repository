@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   root 'home#index'
   get 'home/about'
   
+  get 'search', to:"units#search"
 
   resources :units do
     member do

@@ -7,6 +7,10 @@ class UnitsController < ApplicationController
     @units = Unit.all
   end
   
+  def search
+    @units = Unit.where("serial_number LIKE ?", "%" + params[:q] + "%")
+  end
+
   def download
     @unit = Unit.find(params[:id])
   
@@ -110,13 +114,6 @@ class UnitsController < ApplicationController
       format.json { head :no_content }
     end
   end
-
-  # def destroy
-  #   @unit = Unit.find(params[:id])
-  #   @unit.destroy
-  
-  #   redirect_to units_path, notice: 'Unit was successfully destroyed.'
-  # end
 
   private
     # Use callbacks to share common setup or constraints between actions.

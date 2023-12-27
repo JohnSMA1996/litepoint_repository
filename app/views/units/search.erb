@@ -1,0 +1,9 @@
+<h1>  Search Results  </h1>
+
+<% @units.each do |unit| %>
+  <div>
+<%= render unit %>
+    <%= link_to "Show this unit", unit_path(unit), class: 'btn btn-primary' %>
+  </div>
+  <hr>
+<% end %>
