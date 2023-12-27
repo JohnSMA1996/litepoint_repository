@@ -101,22 +101,22 @@ class UnitsController < ApplicationController
     end
   end
 
-  # DELETE /units/1 or /units/1.json
-  # def destroy
-  #   @unit.destroy
-
-  #   respond_to do |format|
-  #     format.html { redirect_to units_url, notice: "Unit was successfully destroyed." }
-  #     format.json { head :no_content }
-  #   end
-  # end
-
+  #DELETE /units/1 or /units/1.json
   def destroy
-    @unit = Unit.find(params[:id])
     @unit.destroy
-  
-    redirect_to units_path, notice: 'Unit was successfully destroyed.'
+
+    respond_to do |format|
+      format.html { redirect_to units_url, notice: "Unit was successfully destroyed." }
+      format.json { head :no_content }
+    end
   end
+
+  # def destroy
+  #   @unit = Unit.find(params[:id])
+  #   @unit.destroy
+  
+  #   redirect_to units_path, notice: 'Unit was successfully destroyed.'
+  # end
 
   private
     # Use callbacks to share common setup or constraints between actions.

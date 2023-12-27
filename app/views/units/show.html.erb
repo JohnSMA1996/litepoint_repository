@@ -23,14 +23,6 @@
 
 <br>
 
-<!--
-<% if @unit.text_file.attached? %>
-  <p><%= link_to 'Download Log Text File', download_unit_path(@unit) %></p>
-<% end %>
-<% if @unit.text_file.attached? %>
-  <p><%= link_to 'Download Excel File', download_excel_unit_path(@unit) %></p>
-<% end %>
--->
 <% if @unit.text_file.attached? %>
   <p><%= link_to 'Download Log Text File', download_unit_path(@unit), class: 'btn btn-secondary' %></p>
 <% end %>
