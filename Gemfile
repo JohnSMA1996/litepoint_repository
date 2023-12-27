@@ -30,6 +30,9 @@ gem "jbuilder"
 
 gem 'roo', '~> 2.7', '>= 2.7.1'
 
+gem 'axlsx', '~> 2.0'
+
+
 # Use Redis adapter to run Action Cable in production
 # gem "redis", "~> 4.0"
 

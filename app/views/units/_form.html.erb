@@ -1,8 +1,7 @@
-<%= form_with(model: unit, , local: true, multipart: true) do |form| %>
+<%= form_with(model: unit, local: true, multipart: true) do |form| %>
   <% if @unit.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@unit.errors.count, "error") %> prohibited this unit from being saved:</h2>
-
       <ul>
         <% @unit.errors.full_messages.each do |message| %>
           <li><%= message %></li>
@@ -22,8 +21,11 @@
   </div>
 
   <div>
-    <%= form.label :file, style: "display: block" %>
-    <%= form.file_field :file %>
+    <%= form.label :text_file, style: "display: block" %>
+    <%= form.file_field :text_file %>
   </div>
 
+  <div>
+    <%= form.submit "Create Unit" %>
+  </div>
 <% end %>
