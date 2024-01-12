@@ -1,0 +1,16 @@
+<!-- app/views/tests/_folder_contents.html.erb -->
+<% if files.present? %>
+  <%= form_tag tests_path, method: :post do %>
+    <label for="file_dropdown">Select a file:</label>
+    <%= select_tag 'file', options_for_select(files), id: 'file_dropdown' %>
+
+    <!-- Add input fields for serial number and description -->
+    <%= label_tag 'serial_number', 'Serial Number:' %>
+    <%= text_field_tag 'serial_number' %>
+
+    <%= label_tag 'description', 'Description:' %>
+    <%= text_area_tag 'description' %>
+
+    <%= submit_tag 'Run Test', class: 'btn btn-primary' %>
+  <% end %>
+<% end %>

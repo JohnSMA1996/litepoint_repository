@@ -32,6 +32,9 @@ gem 'roo', '~> 2.7', '>= 2.7.1'
 
 gem 'axlsx', '~> 2.0'
 
+gem 'win32ole', '~> 1.8', '>= 1.8.8'
+
+gem 'open3', '~> 0.2.1'
 
 # Use Redis adapter to run Action Cable in production
 # gem "redis", "~> 4.0"

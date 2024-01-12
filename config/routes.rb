@@ -18,8 +18,15 @@ Rails.application.routes.draw do
     end
   end
 
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  match '/generate_file', to: 'tests#generate_file', via: [:get, :post]
 
-  # Defines the root path route ("/")
-  # root "articles#index"
+  resources :tests, only: [:index, :create]
+
+  resources :tests do
+    collection do
+      get 'folder_contents'
+      get 'new_test'
+    end
+  end
+
 end

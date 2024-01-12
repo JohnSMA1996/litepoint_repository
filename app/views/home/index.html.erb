@@ -5,10 +5,6 @@
 
 <%= link_to "New unit", new_unit_path, class:"btn btn-primary" %>
 
-<br>
-<br>
 
-<div class="d-inline-flex" role="search">
-    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-    <button class="btn btn-outline-success" type="submit">Search</button>
-</div>
+<%= link_to "Run Test", tests_path, method: :post, class: "btn btn-primary" %>
+<%= link_to "Create Test", new_test_tests_path, method: :post, class:"btn btn-primary" %>
