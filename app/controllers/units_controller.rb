@@ -8,7 +8,30 @@ class UnitsController < ApplicationController
   end
   
   def search
-    @units = Unit.where("serial_number LIKE ?", "%" + params[:q] + "%")
+    @units = Unit.where("serial_number LIKE ? OR description LIKE ?", "%#{params[:q]}%", "%#{params[:q]}%")
+  end
+  
+  def compare_units
+    # Retrieve selected unit IDs from params
+    selected_unit_ids = params[:selected_units]
+
+    # Fetch the corresponding units
+    @selected_units = Unit.where(id: selected_unit_ids)
+
+    # Process Litepoint LOG for each selected unit
+    @extracted_data = {}
+    @selected_units.each do |unit|
+      if unit.text_file.attached?
+        text_file_content = unit.text_file.download
+        # Call your function to extract data for each unit
+        data_for_unit = extract_data_from_text_file(text_file_content)
+      else
+        data_for_unit = {}
+      end
+
+      # Store the extracted data for each unit in the hash
+      @extracted_data[unit.id] = data_for_unit
+    end
   end
 
   def download

@@ -2,6 +2,20 @@
 class TestsController < ApplicationController
 	def index
 		folder_contents('C:/LitePoint/IQfact_plus/IQfact+_BRCM_6726_Telnet_5.0.0.5_Lock/bin/scripts')
+		check_radios
+		@test_mode
+	end
+
+	def check_radios
+		@test_mode = true
+		# Run your Ruby script here
+		#TODO - ADAPTAR SCRIPT MIGUEL
+		script_path = Rails.root.join('app', 'scripts', 'your_script.rb')
+		@test_mode = system("ruby #{script_path}")
+
+		# respond_to do |format|
+		# 	format.js { render js: "$('#result-mode').html('#{@test_mode ? 'OK' : 'NOK'}');" }
+		#   end
 	end
 
 	def folder_contents(path)
@@ -10,7 +24,6 @@ class TestsController < ApplicationController
 		return false
 		end
 		@files = Dir.entries(path).select { |f| File.file?(File.join(path, f)) }
-		#render partial: 'folder_contents', locals: { files: @files }
 	end
 	
 	def new_test
@@ -50,7 +63,7 @@ class TestsController < ApplicationController
 	def generate_file
 		file_content = generate_file_logic()
   	end
-
+	  
 private
 
 	def execute_test(file)
@@ -384,13 +397,13 @@ END
 				verify.gsub!(/(>BSS_BANDWIDTH \[String\]  = BW-).*/, "\\1#{bw}")
 		  
 				param_freq = :"#{freq_prefix}_#{band}_#{bw}"
-				puts params[param_freq]
 		  
 				params[param_freq]&.each do |freq|
 				  param_power = :"#{power_prefix}_#{band}_#{bw}"
-				  verify.gsub!(/(>#{power_prefix}_DBM \[Double\]  = )\d+/, "\\1#{params[param_power]}")
-		  
-				  if power_prefix == 'TX_POWER'
+				  #verify.gsub!(/(>#{power_prefix.upcase}_DBM \[Double\]  = )\d+/, "\\1#{params[param_power]}")
+				  verify.gsub!(/(>#{power_prefix.upcase}_DBM \[Double\]  = )-?\d+/) { "#{$1}#{params[param_power]}" }
+
+				  if power_prefix.upcase == 'TX_POWER'
 					power_interval = [params[param_power].to_i - 2, params[param_power].to_i + 2]
 					verify.gsub!(/(<POWER_DBM_RMS_AVG_S1 \[Double\]  = ).*/, "\\1< #{power_interval[0]}, #{power_interval[1]}>")
 				  end
@@ -400,7 +413,6 @@ END
 		  
 				  (1..4).each do |i|
 					verify.gsub!(/(>ANT#{i} \[Integer\]  = ).*/, "\\11")
-					puts "Writing to file: #{@file_path}"
 					File.open(@file_path, "a") { |file| file.write(verify) }
 					verify.gsub!(/(>ANT#{i} \[Integer\]  = ).*/, "\\10")
 				  end

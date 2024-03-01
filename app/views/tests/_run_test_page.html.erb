@@ -1,4 +1,4 @@
-<!-- app/views/tests/_folder_contents.html.erb -->
+<!-- app/views/tests/_run_test_page.html.erb -->
 <% if files.present? %>
   <%= form_tag tests_path, method: :post do %>
     <label for="file_dropdown">Select a file:</label>
@@ -9,7 +9,7 @@
     <%= text_field_tag 'serial_number' %>
 
     <%= label_tag 'description', 'Description:' %>
-    <%= text_area_tag 'description' %>
+    <%= select_tag 'description', options_for_select(['D222AH', 'XSR250GK', 'XSR240LKR']) %>
 
     <%= submit_tag 'Run Test', class: 'btn btn-primary' %>
   <% end %>

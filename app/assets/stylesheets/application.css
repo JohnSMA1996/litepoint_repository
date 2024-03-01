@@ -13,3 +13,23 @@
  *= require_tree .
  *= require_self
  */
+ .unit-container {
+    display: flex;
+    flex-direction: row; /* Set to 'row' for left alignment */
+    align-items: center;
+  }
+  
+  .unit-checkbox {
+    transform: scale(1.5); /* Adjust the scale factor as needed */
+    margin-left: 10px; /* Add some spacing between the content and checkbox */
+  }
+  
+  .btn {
+    margin-left: 10px; /* Add some spacing between the "Show this unit" button and checkbox */
+  }
+  
+  .unit-divider {
+    border-top: 1px solid #ccc; /* Define the style of the divider */
+    height: 100%; /* Ensure the divider spans the entire height of the container */
+    margin: 0 10px; /* Adjust the margin to control the space on the sides of the divider */
+  }

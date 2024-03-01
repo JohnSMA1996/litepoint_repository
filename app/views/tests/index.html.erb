@@ -1,3 +1,77 @@
 <!-- app/views/tests/index.html.erb -->
 <h1>Test Index</h1>
-<%= render partial: 'tests/folder_contents', locals: { files: @files } %>
+<%= render partial: 'tests/run_test_page', locals: { files: @files } %>
+
+<br>
+<div id="result-notice-container" style="margin-top: 10px;">
+  <table border="1" style="border-collapse: collapse; width: 300px;">
+    <tr>
+      <th style="border: 1px solid black; padding: 8px; margin: 0;">Modo de Teste</th>
+      <th style="border: 1px solid black; padding: 8px; margin: 0;">wl0</th>
+      <th style="border: 1px solid black; padding: 8px; margin: 0;">wl1</th>
+      <th style="border: 1px solid black; padding: 8px; margin: 0;">wl2</th>
+    </tr>
+    <tr>
+    <td id="result-mode" style="border: 1px solid black; padding: 8px; text-align: center;">
+        <% if @button_clicked %>
+        <%= @test_mode ? 'OK' : 'NOK' %>
+        <% end %>
+    </td>
+    <td id="result-wl0" style="border: 1px solid black; padding: 8px; text-align: center;">
+        <% if @button_clicked %>
+        <%= @test_mode ? 'OK' : 'NOK' %>
+        <% end %>
+    </td>
+    <td id="result-wl1" style="border: 1px solid black; padding: 8px; text-align: center;">
+        <% if @button_clicked %>
+        <%= @test_mode ? 'OK' : 'NOK' %>
+        <% end %>
+    </td>
+    <td id="result-wl2" style="border: 1px solid black; padding: 8px; text-align: center;">
+        <% if @button_clicked %>
+        <%= @test_mode ? 'OK' : 'NOK' %>
+        <% end %>
+    </td>
+    </tr>
+  </table>
+</div>
+
+<%= button_to "Run Script", { controller: 'tests', action: 'check_radios' }, method: :post, onclick: "updateModoDeTeste(event)" %>
+
+<script>
+  function updateModoDeTeste(event) {
+    event.preventDefault(); // Prevent the default form submission
+
+    // Simulate an asynchronous request (replace with your actual logic)
+    setTimeout(function() {
+      var modoDeTesteCell = document.getElementById('result-mode');
+      var resultWl0Cell = document.getElementById('result-wl0');
+      var resultWl1Cell = document.getElementById('result-wl1');
+      var resultWl2Cell = document.getElementById('result-wl2');
+      var testModeDisplay = document.getElementById('test-mode-display');
+      var buttonClicked = true; // Indicate that the button has been clicked
+
+      // Update the content and style based on the separate test result
+      modoDeTesteCell.innerHTML = '<%= @test_mode ? 'OK' : 'NOK' %>';
+      modoDeTesteCell.style.color = 'white'; // Set the text color explicitly
+      modoDeTesteCell.style.backgroundColor = '<%= @test_mode ? 'green' : 'red' %>';
+
+      // Update the content and style of the other cells
+      resultWl0Cell.innerHTML = '<%= @test_mode ? 'OK' : 'NOK' %>';
+      resultWl0Cell.style.color = 'white';
+      resultWl0Cell.style.backgroundColor = '<%= @test_mode ? 'green' : 'red' %>';
+
+      resultWl1Cell.innerHTML = '<%= @test_mode ? 'OK' : 'NOK' %>';
+      resultWl1Cell.style.color = 'white';
+      resultWl1Cell.style.backgroundColor = '<%= @test_mode ? 'green' : 'red' %>';
+
+      resultWl2Cell.innerHTML = '<%= @test_mode ? 'OK' : 'NOK' %>';
+      resultWl2Cell.style.color = 'white';
+      resultWl2Cell.style.backgroundColor = '<%= @test_mode ? 'green' : 'red' %>';
+
+      // Update the Test Mode display
+      testModeDisplay.textContent = '<%= @test_mode %>';
+    }, 0);
+  }
+</script>
+

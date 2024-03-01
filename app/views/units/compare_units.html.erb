@@ -1,0 +1,50 @@
+<!-- app/views/units/compare_units.html.erb -->
+
+<h1>Comparison Page</h1>
+
+<%# Litepoint LOG:
+["Meas. Power", "EVM", "Freq. Error"] ["PER"] %>
+
+<%# Variable Declarations %>
+<% name_tx = ["Meas. Power", "EVM", "Freq. Error"] %>
+<% name_rx = ["PER"] %>
+
+<h3>Litepoint LOG:</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th>Test</th>
+      <th>Name</th>
+      <th>Range</th>
+      <th>Value1</th>
+      <th>Value2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @extracted_data.each do |key, data| %>
+      <% data.each do |sub_key, sub_data| %>
+        <% test = sub_data[0] %>
+        <% values = sub_data[2..-1] %>
+        <td><%= "#{test}" %></td>
+        <td><%= "Signal Power" %></td>
+        <td><%= " " %></td>
+        <td><%= sub_data[1] %></td>
+        <td><%= sub_data[1] %></td>
+        <% values.each_with_index do |value, index| %>
+          <tr>
+            <td><%= "#{test}" %></td>
+            <% if test.include?('TX') %>
+              <td><%= name_tx[index] %></td>
+            <% else %>
+              <td><%= name_rx[index] %></td>
+            <% end %>
+            <td><%= "(#{value[1]})" %></td>
+            <td><%= sub_data[index + 2][0] %></td>
+            <td><%= value[0] %></td>
+          </tr>
+        <% end %>
+      <% end %>
+    <% end %>
+  </tbody>
+</table>
