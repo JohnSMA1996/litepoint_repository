@@ -20,11 +20,7 @@ Rails.application.routes.draw do
 
   match '/generate_file', to: 'tests#generate_file', via: [:get, :post]
 
-  resources :tests, only: [:index, :create]
-
-  post 'tests/run_script', to: 'tests#run_script', as: 'run_script'
-
-  resources :tests do
+  resources :tests, only: [:index, :create] do
     collection do
       get 'run_test_page'
       get 'new_test'

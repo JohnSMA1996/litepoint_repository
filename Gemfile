@@ -36,6 +36,9 @@ gem 'win32ole', '~> 1.8', '>= 1.8.8'
 
 gem 'open3', '~> 0.2.1'
 
+gem 'net-ssh', '~> 6.1.0'
+
+gem 'net-telnet', '~> 0.2.0'
 # Use Redis adapter to run Action Cable in production
 # gem "redis", "~> 4.0"
 

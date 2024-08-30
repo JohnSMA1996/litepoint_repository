@@ -133,6 +133,8 @@ GEM
       timeout
     net-smtp (0.3.3)
       net-protocol
+    net-ssh (6.1.0)
+    net-telnet (0.2.0)
     nio4r (2.5.8)
     nokogiri (1.15.5-x64-mingw-ucrt)
       racc (~> 1.4)
@@ -229,6 +231,8 @@ DEPENDENCIES
   debug
   importmap-rails
   jbuilder
+  net-ssh (~> 6.1.0)
+  net-telnet (~> 0.2.0)
   open3 (~> 0.2.1)
   puma (~> 5.0)
   rails (~> 7.0.4)

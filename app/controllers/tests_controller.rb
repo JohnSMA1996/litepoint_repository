@@ -1,22 +1,91 @@
 # app/controllers/tests_controller.rb
 class TestsController < ApplicationController
+
+	require 'open3'
+	require 'net/ssh'
+	require 'net/telnet'
+
 	def index
 		folder_contents('C:/LitePoint/IQfact_plus/IQfact+_BRCM_6726_Telnet_5.0.0.5_Lock/bin/scripts')
-		check_radios
-		@test_mode
+		@button_clicked = false
+		#@results ||= { "mode" => "?", "wl0" => "?", "wl1" => "?", "wl2" => "?" }
+		@results = flash[:results] || {
+			mode: '?',
+			wl0: '?',
+			wl1: '?',
+			wl2: '?'
+		}
+		Rails.logger.debug("Results in index: #{@results.inspect}")
+
 	end
 
 	def check_radios
-		@test_mode = true
-		# Run your Ruby script here
-		#TODO - ADAPTAR SCRIPT MIGUEL
-		script_path = Rails.root.join('app', 'scripts', 'your_script.rb')
-		@test_mode = system("ruby #{script_path}")
+		begin
+			# Connect via Telnet
+			telnet = Net::Telnet::new(
+				'Host' => '192.168.1.1',
+				'Timeout' => 10,
+				'Prompt' => /[$%#>] \z/n
+			)
 
-		# respond_to do |format|
-		# 	format.js { render js: "$('#result-mode').html('#{@test_mode ? 'OK' : 'NOK'}');" }
-		#   end
+			telnet.login('admin', 'admin') do |c|
+				print c
+			end
+
+			telnet.cmd("sh") do |c|
+				print c
+			end
+
+			output = ""
+			telnet.cmd("wl -i wl0 -i wl1 -i wl2 ver") do |c|
+				output << c
+				print c
+			end
+
+			# Split the output into lines
+			lines = output.split("\n")
+			#p lines
+
+			# Check for the presence of WLTEST in each wireless interface
+			wl0test_present = lines.any? { |line| line.include?('wl0') && line.include?('WLTEST') }
+			wl1test_present = lines.any? { |line| line.include?('wl1') && line.include?('WLTEST') }
+			wl2test_present = lines.any? { |line| line.include?('wl2') && line.include?('WLTEST') }
+
+
+			# Check for the presence of each wireless interface
+			wl0_present = lines.any? { |line| line.include?('wl0') && line.include?('2G') }
+			wl1_present = lines.any? { |line| line.include?('wl1') && line.include?('5G') }
+			wl2_present = lines.any? { |line| line.include?('wl2') && line.include?('6G') }
+
+			# Determine the test results
+			@results = {
+				mode: (wl0test_present && wl2test_present && wl2test_present) ? 'OK' : 'NOK',
+				wl0: wl0_present ? 'OK' : 'NOK',
+				wl1: wl1_present ? 'OK' : 'NOK',
+				wl2: wl2_present ? 'OK' : 'NOK'
+			}
+
+			Rails.logger.debug("Results set: #{@results.inspect}")
+
+			flash[:results] = @results
+			telnet.close
+		rescue => e
+			Rails.logger.error("Telnet connection failed: #{e.message}")
+			flash[:results] = {
+				mode: 'NOK',
+				wl0: 'NOK',
+				wl1: 'NOK',
+				wl2: 'NOK'
+			}
+		end
+	
+		# Redirect to index action
+		redirect_to action: :index
 	end
+		
+
+
+	private
 
 	def folder_contents(path)
 		unless File.directory?(path)

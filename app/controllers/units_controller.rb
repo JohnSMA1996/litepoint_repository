@@ -10,7 +10,7 @@ class UnitsController < ApplicationController
   def search
     @units = Unit.where("serial_number LIKE ? OR description LIKE ?", "%#{params[:q]}%", "%#{params[:q]}%")
   end
-  
+
   def compare_units
     # Retrieve selected unit IDs from params
     selected_unit_ids = params[:selected_units]
@@ -18,20 +18,33 @@ class UnitsController < ApplicationController
     # Fetch the corresponding units
     @selected_units = Unit.where(id: selected_unit_ids)
 
-    # Process Litepoint LOG for each selected unit
-    @extracted_data = {}
+    # Initialize a hash to store the data
+    @combined_data = Hash.new { |hash, key| hash[key] = {} }
+
     @selected_units.each do |unit|
       if unit.text_file.attached?
         text_file_content = unit.text_file.download
         # Call your function to extract data for each unit
         data_for_unit = extract_data_from_text_file(text_file_content)
+        
       else
-        data_for_unit = {}
+        data_for_unit = []
       end
 
-      # Store the extracted data for each unit in the hash
-      @extracted_data[unit.id] = data_for_unit
+      #Delete end of list repeats
+      data_for_unit = data_for_unit[0...-4]
+      #Rails.logger.debug "Data for unit #{unit.id}: #{data_for_unit.inspect}"
+
+      # Populate the combined_data hash
+      data_for_unit.each do |data|
+        key = "#{data[:test]}|#{data[:name]}|#{data[:range]}"
+        #Rails.logger.debug "Storing value #{data[:value]} for key #{key} and unit #{unit.id}"
+        @combined_data[key][unit.id] = data[:value]
+      end
+
     end
+    @combined_data 
+    #Rails.logger.debug "Combined data: #{@combined_data.inspect}"
   end
 
   def download
@@ -149,58 +162,47 @@ class UnitsController < ApplicationController
       params.require(:unit).permit(:serial_number, :description, :file, :text_file)
       #params.require(:unit).permit(:serial_number, :description, files: [])
     end
-  
-    def add_tx_data(sheet, values)
-      sheet.add_row [values[0], "TX_POWER", "", values[1]] if values.size > 1
-      sheet.add_row [values[0], "MEASURED_POWER", "(#{values[2][1]})", values[2][0]] if values.size > 2
-      sheet.add_row [values[0], "EVM", "(#{values[3][1]})", values[3][0]] if values.size > 3
-      sheet.add_row [values[0], "FREQ_ERROR_AVG", "(#{values[4][1]})", values[4][0]] if values.size > 4
-    end
     
-    def add_rx_data(sheet, values)
-      sheet.add_row [values[0], "RX_POWER", "", values[1]] if values.size > 1
-      sheet.add_row [values[0], "PER", "(0, #{values[2][1]})", values[2][0]] if values.size > 2
-    end
+  def extract_data_from_text_file(content)
+    patterns = [
+      /(.X_VERIFY|ANT\d|MCS\d+|\d{4}|BW-\d+)/,
+      /^TX_POWER_DBM\s+: \s+([-\d.]+) dBm/,
+      /^FREQ_ERROR_AVG\s+: \s+([-\d.]+) ppm\s+\(\s*(-?\d+,\s*-?\d+)\)/,
+      /^POWER_DBM_RMS_AVG_S1\s+: \s+([-\d.]+) dBm\s+\(\s*(-?\d+,\s*-?\d+)\)/,
+      /^EVM_DB_AVG_S1\s+: \s+([-\d.]+) dB\s+\(\s*(,\s*-?\d+)\)/
+    ]
 
-    def extract_data_from_text_file(content)
-      patterns = [
-        /(.X_VERIFY|ANT\d|MCS\d+|\d{4}|BW-\d+)/,
-        /^TX_POWER_DBM\s+: \s+([-\d.]+) dBm/,
-        /^FREQ_ERROR_AVG\s+: \s+([-\d.]+) ppm\s+\(\s+(-?\d+,\s*-?\d+)\)/,
-        /^POWER_DBM_RMS_AVG_S1\s+: \s+([-\d.]+) dBm\s+\(\s*(-?\d+,\s*-?\d+)\)/,
-        /^EVM_DB_AVG_S1\s+: \s+([-\d.]+) dB\s+\(\s*(,\s*-?\d+)\)/,
-      ]
+    patterns_rx = [
+      /(.X_VERIFY|ANT\d|MCS\d+|\d{4}|BW-\d+)/,
+      /^RX_POWER_DBM\s+: \s+([-\d.]+) dBm/,
+      /^PER\s+: \s+([-\d.]+) %\s+\(\s*,?\s*(-?\d+)\s*\)/
+    ]
 
-      patterns_rx = [
-        /(.X_VERIFY|ANT\d|MCS\d+|\d{4}|BW-\d+)/,
-        /^RX_POWER_DBM\s+: \s+([-\d.]+) dBm/,
-        /^PER\s+: \s+([-\d.]+) %\s+\(\s*,?\s*(-?\d+)\s*\)/
-      ]
-    
-      extracted_data = {}
-      split_test_content = content.split("[Info] Function completed.")
-      split_test_content.each do |test_antenna|
-        # Filters undesired blocks of information
-        if test_antenna.include?("TX_VERIFY")
-          test = test_antenna.scan(patterns[0]).first(5).join(' ')
-          hash_key = test_antenna.scan(/^\d+/)[0]
-          tx_power = test_antenna.scan(patterns[1])[1].to_a[0].to_f
-          freq_error = test_antenna.scan(patterns[2])[0]
-          power_avg = test_antenna.scan(patterns[3]).flatten
-          evm_avg = test_antenna.scan(patterns[4])[0]
-          extracted_data[hash_key] = [test, tx_power, power_avg, evm_avg, freq_error]
-        elsif test_antenna.include?("RX_VERIFY")
-          hash_key = test_antenna.scan(/^\d+/)[0]
-          test = test_antenna.scan(patterns_rx[0]).first(5).join(' ')
-          rx_power = test_antenna.scan(patterns_rx[1]).flatten[0]
-          per = test_antenna.scan(patterns_rx[2]).flatten
-          extracted_data[hash_key] = [test, rx_power,per]
-        end
+    extracted_data = []
+    split_test_content = content.split("[Info] Function completed.")
+    split_test_content.each do |test_antenna|
+      if test_antenna.include?("TX_VERIFY")
+        test = test_antenna.scan(patterns[0]).flatten.first(5).join(' ')
+        hash_key = test_antenna.scan(/^\d+/).first
+        tx_power = test_antenna.scan(patterns[1]).flatten.first.to_f
+        freq_error = test_antenna.scan(patterns[2]).flatten
+        power_avg = test_antenna.scan(patterns[3]).flatten
+        evm_avg = test_antenna.scan(patterns[4]).flatten
+        extracted_data << { test: test, name: 'TX Power', value: tx_power, range: '(-)' }
+        extracted_data << { test: test, name: 'Freq. Error', value: freq_error[0].to_f, range: "(#{freq_error[1]})" }
+        extracted_data << { test: test, name: 'Meas. Power', value: power_avg[0].to_f, range: "(#{power_avg[1]})" }
+        extracted_data << { test: test, name: 'EVM', value: evm_avg[0].to_f, range: "(#{evm_avg[1]})" }
+      elsif test_antenna.include?("RX_VERIFY")
+        hash_key = test_antenna.scan(/^\d+/)[0]
+        test = test_antenna.scan(patterns_rx[0]).first(5).join(' ')
+        rx_power = test_antenna.scan(patterns_rx[1]).flatten[0]
+        per = test_antenna.scan(patterns_rx[2]).flatten
+        extracted_data << { test: test, name: 'RX Power', value: rx_power, range: '(-)' }
+        extracted_data << { test: test, name: 'PER', value: per[0], range: "(0,10%)" }
       end
-      extracted_data.delete(extracted_data.keys.last) if extracted_data.keys.length > 1
-      #puts extracted_data
-      extracted_data
     end
+    extracted_data
+  end
 
 end
 
