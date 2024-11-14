@@ -1,9 +1,28 @@
-<h1>  Search Results  </h1>
+<h1>Search Results</h1>
 
-<% @units.each do |unit| %>
-  <div>
-<%= render unit %>
-    <%= link_to "Show this unit", unit_path(unit), class: 'btn btn-primary' %>
-  </div>
-  <hr>
+<%= form_tag(compare_units_path, method: :get, id: 'compareForm') do %>
+  <% @units.each do |unit| %>
+    <div class="unit-container">
+      <%= render unit %>
+      <hr class="unit-divider">
+      <%= link_to "Show this unit", unit_path(unit), class: 'btn btn-primary' %>
+      <hr class="unit-divider">
+      <%= check_box_tag 'selected_units[]', unit.id, false, class: 'unit-checkbox' %>
+      <hr class="unit-divider">
+      <%= label_tag "selected_units_#{unit.id}", 'Select for comparison' %>
+    </div>
+    <hr class="unit-divider">
+  <% end %>
+  <%= submit_tag 'Compare Selected Units', id: 'compareSelected', class: 'btn btn-primary' %>
 <% end %>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('compareSelected').addEventListener('click', function() {
+      document.getElementById('compareForm').submit();
+    });
+  });
+</script>
+
+<!-- TODO Compare Results between units -->

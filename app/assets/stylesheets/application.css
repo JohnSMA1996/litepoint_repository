@@ -12,4 +12,152 @@
  *
  *= require_tree .
  *= require_self
- */
+ /* */
+
+
+/* General layout for sections */
+/* General layout for sections */
+/* General layout for sections */
+.mcs-section, .bandwidths, .frequency-section {
+  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid #ddd; /* Light border around sections */
+  border-radius: 5px; /* Rounded corners */
+  background-color: #f9f9f9; /* Light background */
+}
+
+/* MCS selection styling */
+.mcs-section select {
+  width: 150px; /* Set a fixed width for the select dropdown */
+  padding: 5px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  margin-left: 10px;
+}
+
+/* Bandwidths layout */
+.bandwidths {
+  margin-top: 10px;
+}
+
+.bandwidths input[type="checkbox"] {
+  margin-right: 5px;
+}
+
+.bandwidths label {
+  font-size: 13px;
+  margin-right: 15px;
+}
+
+/* Frequency checkboxes layout */
+.frequency-subgroup {
+  margin-bottom: 15px;
+}
+
+.frequency-subtitle {
+  font-weight: bold;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.frequency-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* Responsive grid for frequencies */
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.frequency-checkbox {
+  margin-right: 5px;
+}
+
+.frequency-checkbox + label {
+  display: inline-block;
+  margin-left: 5px;
+  font-size: 13px; /* Smaller font size for checkboxes */
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 8px;
+}
+
+/* Form styling */
+.form-inputs input[type="text"], .form-inputs select {
+  margin-bottom: 15px;
+  padding: 5px;
+  width: 100%;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.form-inputs .section-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #333; /* Slightly darker for section titles */
+}
+
+.bands {
+  margin-top: 5px;
+}
+
+.bands input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+h1 {
+  font-size: 32px; /* Main title */
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-size: 35px !important;
+  text-align: center;
+  font-weight: bold;
+  margin-top: 20px;
+  margin-bottom: 15px;
+}
+
+
+.small-header {
+  font-size: 14px; /* Smaller size for band-direction headers */
+  font-weight: normal;
+  margin: 10px 0;
+}
+
+.small-section-title {
+  font-size: 16px;
+  text-align: left;
+  font-weight: bold;
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+
+.button-container {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  margin-bottom: 20px; /* Adds space below the button */
+}
+
+.custom-button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.custom-button:hover {
+  background-color: #45a049;
+}

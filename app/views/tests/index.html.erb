@@ -1,3 +1,38 @@
-<!-- app/views/tests/index.html.erb -->
-<h1>Test Index</h1>
-<%= render partial: 'tests/folder_contents', locals: { files: @files } %>
+<h1 class="text-center my-4">Test Index</h1>
+
+<!-- Partial for file selection and serial number input -->
+<%= render partial: 'tests/run_test_page', locals: { files: @files } %>
+
+<!-- Table to display results -->
+<table class="table table-bordered table-striped table-hover mx-auto my-4" style="max-width: 800px;">
+  <thead class="thead-light">
+    <tr>
+      <th scope="col" class="text-center">Test Mode</th>
+      <th scope="col" class="text-center">wl0</th>
+      <th scope="col" class="text-center">wl1</th>
+      <th scope="col" class="text-center">wl2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="text-center <%= @results["mode"] == 'OK' ? 'bg-success text-white' : 'bg-danger text-white' %>">
+        <%= @results["mode"] %>
+      </td>
+      <td class="text-center <%= @results["wl0"] == 'OK' ? 'bg-success text-white' : 'bg-danger text-white' %>">
+        <%= @results["wl0"] %>
+      </td>
+      <td class="text-center <%= @results["wl1"] == 'OK' ? 'bg-success text-white' : 'bg-danger text-white' %>">
+        <%= @results["wl1"] %>
+      </td>
+      <td class="text-center <%= @results["wl2"] == 'OK' ? 'bg-success text-white' : 'bg-danger text-white' %>">
+        <%= @results["wl2"] %>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- Buttons for test actions -->
+<div class="text-center my-4">
+  <%= button_to "Radios Verification", { controller: 'tests', action: 'check_radios' }, method: :post, class: 'btn btn-warning btn-lg mx-2' %>
+  <%= button_to "Apply Test Mode", { controller: 'tests', action: 'test_mode' }, method: :post, class: 'btn btn-info btn-lg mx-2' %>
+</div>

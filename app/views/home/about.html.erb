@@ -1,1 +1,78 @@
-<h1>Unit Log</h1>
+<!-- app/views/home/about.html.erb -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About - IQFact Log Analyzer</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #f4f7fa;
+      font-family: Arial, sans-serif;
+    }
+    .about-container {
+      text-align: center;
+      margin-top: 50px;
+      padding: 40px;
+      background-color: #ffffff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+    }
+    .about-header {
+      margin-bottom: 30px;
+    }
+    .about-header h1 {
+      font-size: 2.5rem;
+      color: #333;
+    }
+    .about-text {
+      font-size: 1.2rem;
+      color: #666;
+      line-height: 1.8;
+    }
+    .about-footer {
+      margin-top: 40px;
+      font-size: 1rem;
+      color: #888;
+    }
+    .about-logo {
+      max-width: 300px;
+      margin-bottom: 30px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container about-container">
+  <!-- Logo -->
+  <img src="<%= asset_path('ALTICE_LABS_LOGO_POS_HOR_TRANS_RGB.png') %>" alt="ALTICE Labs Logo" class="about-logo" />
+
+  <!-- Header -->
+  <div class="about-header">
+    <h1>Welcome to <strong>Hardware QA</strong> App</h1>
+  </div>
+
+  <!-- Description -->
+  <div class="about-text">
+    <p>
+      This web application, developed by the <strong>DAC7 HW QA Team</strong>, is designed to simplify the testing and logging of wireless technologies such as Wi-Fi, Bluetooth, and ZigBee. The app allows users to run tests, collect data from various units, and store detailed logs for further analysis.
+    </p>
+    <p>
+      By integrating with the IQFact testing platform, this app makes it easy to generate and download test reports in different formats, including text files, Excel sheets, and PDF documents. The results can be reviewed, analyzed, and archived to ensure consistent quality and performance across multiple devices.
+    </p>
+  </div>
+
+  <!-- Footer -->
+  <div class="about-footer">
+    <p>Developed by the <strong>DAC7 HW QA Team</strong></p>
+  </div>
+</div>
+
+<!-- Bootstrap JS (Optional) -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

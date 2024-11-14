@@ -1,156 +1,71 @@
-<p style="color: green"><%= notice %></p>
+<p class="text-success"><%= notice %></p>
 
-<h2>Unit LOGs</h2>
+<div class="container">
+  <!-- Unit Header Section -->
+  <h2 class="text-center my-4">Unit LOGs</h2>
+  <h3 class="text-muted text-center"><%= @unit.serial_number %></h3>
 
-<br>
-
-<h1><%= @unit.serial_number %></h1>
-
-<div>
-  <p>
-    <strong>Description:</strong>
-    <%= @unit.description %>
-  </p>
-</div>
-
-<%= form_for @unit, html: { multipart: true } do |f| %>
-  <div class="form-group">
-    <%= f.file_field :text_file, class: "form-control" %>
+  <!-- Unit Description Section -->
+  <div class="mb-4 text-center">
+    <p><strong>Description:</strong> <%= @unit.description %></p>
   </div>
-<br>
-  <%= f.submit "Import", class: "btn btn-primary" %>
-<% end %>
 
-<br>
+  <!-- File Upload Form Section -->
+  <%= form_for @unit, html: { multipart: true, class: 'text-center' } do |f| %>
+    <div class="form-group mb-3">
+      <%= f.file_field :text_file, class: "form-control-file" %>
+    </div>
+    <%= f.submit "Import", class: "btn btn-primary btn-lg mb-4" %>
+  <% end %>
 
-<% if @unit.text_file.attached? %>
-  <p><%= link_to 'Download Log Text File', download_unit_path(@unit), class: 'btn btn-secondary' %></p>
-<% end %>
+  <!-- Download Links Section -->
+  <% if @unit.text_file.attached? %>
+    <div class="d-flex justify-content-center mb-4">
+      <div class="btn-group">
+        <%= link_to 'Download Log Text File', download_unit_path(@unit), class: 'btn btn-secondary btn-lg' %>
+        <%= link_to 'Download Excel File', download_excel_unit_path(@unit), class: 'btn btn-success btn-lg' %>
+        <%= link_to 'Download PDF', combined_pdf_unit_path(@unit), class: 'btn btn-primary btn-lg' %>
+      </div>
+    </div>
+  <% end %>
 
-<% if @unit.text_file.attached? %>
-  <p><%= link_to 'Download Excel File', download_excel_unit_path(@unit), class: 'btn btn-success' %></p>
-<% end %>
+    <!-- Action Buttons Section -->
+  <div class="text-center mt-4">
+    <%= link_to "Edit this unit", edit_unit_path(@unit), class:"btn btn-secondary mr-2" %>
+    <%= link_to "Back to units", units_path, class:"btn btn-secondary" %>
+    <%= button_to "Destroy this unit", @unit, method: :delete, data: { confirm: 'Are you sure?' }, class:"btn btn-danger ml-2" %>
+  </div>
 
 
-<style>
-  table {
-    border-collapse: collapse;
-    width: 70%;
-    margin: 20px;
-  }
-
-  th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-  }
-
-  th {
-    background-color: #f2f2f2;
-  }
-</style>
-
-<h3>Litepoint LOG:</h3>
-
-<% if @extracted_data.any? %>
-  <table>
-    <thead>
-      <tr>
-        <th>Test</th>
-        <th>Name</th>
-        <th>Range</th>
-        <th>Value</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @extracted_data.each do |key, values| %>
-        <% test_description = values[0] %>
-        <% test_type = test_description.include?("TX_VERIFY") ? "TX" : "RX" %>
-
-        <% if values.size > 1 && test_type == "TX" %>
+  <!-- Test Results Table Section -->
+  <div class="table-responsive">
+    <h2 class="text-center my-4">Test Results</h2>
+    <table class="table table-bordered table-hover table-striped mx-auto w-75">
+      <thead class="thead-light">
+        <tr>
+          <th scope="col">Test</th>
+          <th scope="col">Name</th>
+          <th scope="col">Range</th>
+          <th scope="col">Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @extracted_data[0...-4].each do |data| %>
           <tr>
-            <td><%= test_description %></td>
-            <td>TX_POWER</td>
-            <td></td>
-            <td style="background-color:  <%= 'grey' %>;">
-              <%= values[1] %>
-            </td>
+            <td><%= data[:test] %></td>
+            <td><%= data[:name] %></td>
+            <td><%= data[:range] %></td>
+            <td><%= data[:value] %></td>
           </tr>
         <% end %>
+      </tbody>
+    </table>
+  </div>
 
-        <% if values.size > 2 && test_type == "TX" %>
-          <tr>
-            <td><%= test_description %></td>
-            <td>MEASURED_POWER</td>
-            <td>(<%= values[2][1] %>)</td>
-            <% range = values[2][1].scan(/-?\d+/).map(&:to_f) %>
-            <% value = values[2][0].to_f %>
-            <td style="background-color: <%= (range.size == 2 && value.between?(range.min, range.max)) ? 'green' : 'red' %>;">
-              <%= value %>
-            </td>
-          </tr>
-        <% end %>
-
-        <% if values.size > 3 && test_type == "TX" %>
-          <tr>
-            <td><%= test_description %></td>
-            <td>EVM</td>
-            <% range = values[3][1].scan(/-?\d+/).first.to_f %>
-            <% value = values[3][0].to_f %>
-            <td>(<%= values[3][1] %>)</td>
-            <td style="background-color: <%= (value < range) ? 'green' : 'red' %>;">
-              <%= value %>
-            </td>
-          </tr>
-        <% end %>
-
-        <% if values.size > 4 && test_type == "TX" %>
-          <tr>
-            <td><%= test_description %></td>
-            <td>FREQ_ERROR_AVG</td>
-            <td>(<%= values[4][1] %>)</td>
-            <% range_freq_error = values[4][1].scan(/-?\d+/).map(&:to_f) %>
-            <% value_freq_error = values[4][0].to_f %>
-            <td style="background-color: <%= (range_freq_error.size == 2 && value_freq_error.between?(range_freq_error.min, range_freq_error.max)) ? 'green' : 'red' %>;">
-              <%= value_freq_error %>
-            </td>
-          </tr>
-        <% end %>
-
-        <% if values.size > 1 && test_type == "RX" %>
-          <tr>
-            <td><%= test_description %></td>
-            <td>RX_POWER</td>
-            <td></td>
-            <td style="background-color: <%= 'grey' %>;">
-              <%= values[1] %>
-            </td>
-          </tr>
-        <% end %>
-
-        <% if values.size > 2 && test_type == "RX" %>
-          <tr>
-            <td><%= test_description %></td>
-            <td>PER</td>
-            <td><%= "(0, #{values[2][1]})" %></td>
-            <td style="background-color: <%= (values[2][0].to_f >= 0 && values[2][0].to_f <= 10) ? 'green' : 'red' %>;">
-              <%= values[2][0] %>
-            </td>
-          </tr>
-        <% end %>
-
-      <% end %>
-    </tbody>
-  </table>
-<% else %>
-  <p>No extracted data available.</p>
-<% end %>
-<br>
-
-<br>
-<%= link_to "Edit this unit", edit_unit_path(@unit), class:"btn btn-secondary" %> |
-<%= link_to "Back to units", units_path, class:"btn btn-secondary" %>
-
-<br>
-<br>
-<%= button_to "Destroy this unit", @unit, method: :delete, class:"btn btn-danger"  %>
+  <!-- Action Buttons Section -->
+  <div class="text-center mt-4">
+    <%= link_to "Edit this unit", edit_unit_path(@unit), class:"btn btn-secondary mr-2" %>
+    <%= link_to "Back to units", units_path, class:"btn btn-secondary" %>
+    <%= button_to "Destroy this unit", @unit, method: :delete, data: { confirm: 'Are you sure?' }, class:"btn btn-danger ml-2" %>
+  </div>
+</div>

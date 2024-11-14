@@ -1,0 +1,52 @@
+<html>
+<head>
+  <title>Test Results</title>
+  <style>
+    table {
+      width: 100%;
+      max-width: 1000px;
+      margin: auto;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <h1>Test Results</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Test</th>
+        <th>Name</th>
+        <th>Range</th>
+        <% @selected_units.each_with_index do |unit, index| %>
+          <th>Value <%= index + 1 %></th>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <% @combined_data.each do |key, values| %>
+        <% test, name, range = key.split('|', 3) %>
+        <tr>
+          <td><%= test %></td>
+          <td><%= name %></td>
+          <td><%= range %></td>
+          <% @selected_units.each do |unit| %>
+            <td><%= values[unit.id] || "" %></td>
+          <% end %>
+          <%# @selected_units.each_with_index do |unit, index| %>
+            <%#<td><%= values[index] || ""</td>%>
+          <%# end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</body>
+</html>

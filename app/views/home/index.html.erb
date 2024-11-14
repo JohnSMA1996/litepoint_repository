@@ -1,10 +1,21 @@
-<h1>IQFact Repository</h1>
+<div class="container text-center my-5">
+  <h1 class="display-4 mb-4">HW QA Repository</h1>
 
-<br>
-<br>
+  <div class="card mb-4 shadow-sm p-4">
+    <h2 class="h4 mb-3 text-primary">Wi-Fi</h2>
+    <div class="d-flex justify-content-center gap-3">
+      <%= link_to "New Unit", new_unit_path, class: "btn btn-outline-primary" %>
+      <%= link_to "Run Test", tests_path, method: :post, class: "btn btn-primary" %>
+      <%= link_to "Create Test", new_test_tests_path, method: :post, class: "btn btn-outline-primary" %>
+    </div>
+  </div>
 
-<%= link_to "New unit", new_unit_path, class:"btn btn-primary" %>
-
-
-<%= link_to "Run Test", tests_path, method: :post, class: "btn btn-primary" %>
-<%= link_to "Create Test", new_test_tests_path, method: :post, class:"btn btn-primary" %>
+  <div class="card mb-4 shadow-sm p-4">
+    <h2 class="h4 mb-3 text-primary">Bluetooth + ZigBee</h2>
+    <div class="d-flex justify-content-center gap-3">
+      <%= link_to "New Unit", new_unit_path, class: "btn btn-outline-primary" %>
+      <%= link_to "Run Test", tests_path, method: :post, class: "btn btn-primary" %>
+      <%= link_to "Create Test", new_test_tests_path, method: :post, class: "btn btn-outline-primary" %>
+    </div>
+  </div>
+</div>

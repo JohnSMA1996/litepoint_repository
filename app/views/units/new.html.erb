@@ -1,9 +1,11 @@
-<h1>New unit</h1>
+<div class="container my-5">
+  <h1 class="display-4 text-center mb-4">New Unit</h1>
 
-<%= render "form", unit: @unit %>
+  <div class="card p-4 shadow-sm">
+    <%= render "form", unit: @unit %>
+  </div>
 
-<br>
-
-<div>
-  <%= link_to "Back to units", units_path %>
+  <div class="text-center mt-4">
+    <%= link_to "Back to Units", units_path, class: "btn btn-outline-secondary" %>
+  </div>
 </div>

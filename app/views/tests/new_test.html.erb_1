@@ -1,0 +1,241 @@
+<style>
+  .frequency-subgroup {
+    display: inline-block;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    vertical-align: top; /* Align the tops of the elements */
+  }
+
+  .frequency-checkbox {
+    margin-right: 5px;
+  }
+
+  .frequency-subtitle {
+    font-style: italic;
+    margin-bottom: 5px;
+  }
+</style>
+
+<style>
+  .hidden-section {
+    display: none;
+  }
+
+  .section-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px; /* Add margin as needed */
+  }
+
+  .section {
+    flex: 0 0 48%; /* Adjust the width as needed */
+  }
+</style>
+
+<!--TODO Refazer de modo às coisas não aparecerem se nãos seleccionadas-->
+
+<% def render_frequency_checkboxes(band, direction, frequencies) %>
+  <h3><%= "#{band}-GHz #{direction.upcase}" %></h3>
+  <% frequencies.each do |key, freq_list| %>
+    <div class="frequency-subgroup">
+      <div class="frequency-subtitle"><%= key.split('_').last.humanize %> MHz</div>
+      <% freq_list.each do |frequency| %>
+        <%= check_box_tag "#{direction}_#{key}[]", frequency, false, class: 'frequency-checkbox' %>
+        <%= label_tag "#{key}_#{frequency}", "#{frequency} MHz" %><br>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>
+
+<% def render_mcs_selection(section, selected_value) %>
+  <div class="section-container">
+    <div class="section section-<%= section %>">
+      MCS
+      <%= select_tag "mcs_#{section}", options_for_select([
+        ['MCS0', '0'],
+        ['MCS1', '1'],
+        ['MCS2', '2'],
+        ['MCS3', '3'],
+        ['MCS4', '4'],
+        ['MCS5', '5'],
+        ['MCS6', '6'],
+        ['MCS7', '7'],
+        ['MCS8', '8'],
+        ['MCS9', '9'],
+        ['MCS10', '10'],
+        ['MCS11', '11'],
+        ['MCS12', '12'],
+        ['MCS13', '13']
+      ], selected_value) %>
+<% end %>
+
+<% frequencies_2 = {
+    "frequencies_2_20" => [2412, 2417, 2422, 2427, 2432, 2437, 2442, 2447, 2452, 2457, 2462, 2467, 2472, 2484],
+    "frequencies_2_40" => [2412, 2417, 2422, 2427, 2432, 2437, 2442, 2447, 2452, 2457, 2462, 2467, 2472, 2484]
+} %>
+
+<% frequencies_5 = {
+  "frequencies_5_20" => [5160, 5180, 5200, 5220, 5240, 5260, 5280, 5300, 5320, 5340, 5360, 5380, 5400, 5420, 5440, 5460, 5480, 5500, 5520, 5540, 5560, 5580, 5600, 5620, 5640, 5660, 5680, 5700, 5720, 5745, 5765, 5785, 5805, 5825, 5845, 5865, 5885],
+  "frequencies_5_40" => [5190, 5230, 5270, 5310, 5510, 5550, 5590, 5630, 5670, 5710, 575, 5795, 5835],
+  "frequencies_5_80" => [5210, 5290, 5530, 5610, 5690, 5775, 5855],
+  "frequencies_5_160" => [5250, 5570, 5815]
+} %>
+
+<% frequencies_6 = {
+  "frequencies_6_20" => [5955, 5975, 5995, 6015, 6035, 6055, 6075, 6095, 6115, 6135, 6155, 6175, 6195, 6215, 6235, 6255, 6275, 6295, 6315, 6335, 6355, 6375, 6395, 6415, 6435, 6455, 6475, 6495, 6515, 6535, 6555, 6575, 6595, 6615, 6635, 6655, 6675, 6695, 6715, 6735, 6755, 6775, 6795, 6815, 6835, 6855, 6875, 6895, 6915, 6935, 6955, 6975, 6995, 7015, 7035, 7055, 7075, 7095, 7115],
+  "frequencies_6_40" => [5965, 6005, 6045, 6085, 6125, 6165, 6205, 6245, 6285, 6325, 6365, 6405, 6445, 6485, 6525, 6565, 6605, 6645, 6685, 6725, 6765, 6805, 6845, 6885, 6925, 6965, 7005, 7045, 7085],
+  "frequencies_6_80" => [5985, 6065, 6145, 6225, 6305, 6385, 6465, 6545, 6625, 6705, 6785, 6865, 6945, 7025],
+  "frequencies_6_160" => [6025, 6185, 6345, 6505, 6665, 6825, 6985],
+  "frequencies_6_320" => [6105, 6265, 6425, 6585, 6745, 6905]
+} %>
+
+<% bands_and_bandwidths = {
+  "2_20" => "2.4 GHz 20 MHz",
+  "2_40" => "2.4 GHz 40 MHz",
+  "5_20" => "5 GHz 20 MHz",
+  "5_40" => "5 GHz 40 MHz",
+  "5_80" => "5 GHz 80 MHz",
+  "5_160" => "5 GHz 160 MHz",
+  "6_20" => "6 GHz 20 MHz",
+  "6_40" => "6 GHz 40 MHz",
+  "6_80" => "6 GHz 80 MHz",
+  "6_160" => "6 GHz 160 MHz",
+  "6_320" => "6 GHz 320 MHz"
+} %>
+
+<h1>Criar Teste</h1>
+<%= form_tag(generate_file_path, method: :post) do %>
+  Nome: <%= text_field_tag :test_name %>
+
+<br>
+  IP:<%=  text_field_tag :ip, "192.168.1.1" %>
+<br>
+
+  <% if @config_files.present? %>
+    <label for="file_dropdown">Config file:</label>
+    <%= select_tag 'config_file', options_for_select(@config_files), id: 'file_dropdown' %>
+  <% end %>
+  <br>
+  <% if @pathloss_files.present? %>
+    <label for="file_dropdown">Pathloss file:</label>
+    <%= select_tag 'path_loss_file', options_for_select(@pathloss_files), id: 'file_dropdown' %>
+  <% end %>
+
+
+  <br>
+  <div class="title" style="font-weight: bold; font-size: 27px; margin-bottom: 5px;">
+    <%= 'TX VERIFY:' %>
+  </div>
+
+  <%= render_mcs_selection('tx', @test_tx_mcs) %>
+
+
+  <br>
+  Bandas:
+  <%= check_box_tag 'bands[]', '2' %> 2.4 GHz
+  <%= check_box_tag 'bands[]', '5' %> 5 GHz
+  <%= check_box_tag 'bands[]', '6' %> 6 GHz
+  <br>
+  <div class="title" style="font-weight: bold; font-size: 17px; margin-bottom: 5px;">
+    <%= 'BANDWIDTHS:' %>
+  </div>
+  2.4 GHz
+  <br>
+  <%= check_box_tag '2_bw_tx[]', '20' %> 20 MHz
+  <%= check_box_tag '2_bw_tx[]', '40' %> 40 MHz
+  <br>
+  5 GHz
+  <br>
+  <%= check_box_tag '5_bw_tx[]', '20' %> 20 MHz
+  <%= check_box_tag '5_bw_tx[]', '40' %> 40 MHz
+  <%= check_box_tag '5_bw_tx[]', '80' %> 80 MHz
+  <%= check_box_tag '5_bw_tx[]', '160' %> 160 MHz
+  <br>
+  6 GHz
+  <br>
+  <%= check_box_tag '6_bw_tx[]', '20' %> 20 MHz
+  <%= check_box_tag '6_bw_tx[]', '40' %> 40 MHz
+  <%= check_box_tag '6_bw_tx[]', '80' %> 80 MHz
+  <%= check_box_tag '6_bw_tx[]', '160' %> 160 MHz
+  <%= check_box_tag '6_bw_tx[]', '320' %> 320 MHz
+  <br>
+
+  <div class="title" style="font-weight: bold; font-size: 17px; margin-bottom: 5px;">
+    <%= 'TX - POWER:' %>
+  </div>
+
+  <% bands_and_bandwidths.each do |key, label| %>
+    <div class="tx-power-input">
+      POWER <%= label %>:
+      <%= text_field_tag "tx_power_#{key}", "" %>
+    </div>
+  <% end %>
+
+  <br>
+  <div class="title" style="font-weight: bold; font-size: 17px; margin-bottom: 5px;">
+    <%= 'Frequencies:' %>
+  </div>
+
+
+  <% render_frequency_checkboxes("2", "tx", frequencies_2) %>
+  <% render_frequency_checkboxes("5", "tx", frequencies_5) %>
+  <% render_frequency_checkboxes("6", "tx", frequencies_6) %>
+  ######################################################################
+  <br>
+  <div class="title" style="font-weight: bold; font-size: 27px; margin-bottom: 5px;">
+    <%= 'RX VERIFY:' %>
+  </div>
+
+  <%= render_mcs_selection('rx', @test_rx_mcs) %>
+  <br>
+  Bandas:
+  <%= check_box_tag 'bands_rx[]', '2' %> 2.4 GHz
+  <%= check_box_tag 'bands_rx[]', '5' %> 5 GHz
+  <%= check_box_tag 'bands_rx[]', '6' %> 6 GHz
+  <br>
+  <div class="title" style="font-weight: bold; font-size: 17px; margin-bottom: 5px;">
+    <%= 'BANDWIDTHS:' %>
+  </div>
+  2.4 GHz
+  <br>
+  <%= check_box_tag '2_bw_rx[]', '20' %> 20 MHz
+  <%= check_box_tag '2_bw_rx[]', '40' %> 40 MHz
+  <br>
+  5 GHz
+  <br>
+  <%= check_box_tag '5_bw_rx[]', '20' %> 20 MHz
+  <%= check_box_tag '5_bw_rx[]', '40' %> 40 MHz
+  <%= check_box_tag '5_bw_rx[]', '80' %> 80 MHz
+  <%= check_box_tag '5_bw_rx[]', '160' %> 160 MHz
+  <br>
+  6 GHz
+  <br>
+  <%= check_box_tag '6_bw_rx[]', '20' %> 20 MHz
+  <%= check_box_tag '6_bw_rx[]', '40' %> 40 MHz
+  <%= check_box_tag '6_bw_rx[]', '80' %> 80 MHz
+  <%= check_box_tag '6_bw_rx[]', '160' %> 160 MHz
+  <%= check_box_tag '6_bw_rx[]', '320' %> 320 MHz
+  <br>
+
+  <div class="title" style="font-weight: bold; font-size: 17px; margin-bottom: 5px;">
+    <%= 'RX - POWER:' %>
+  </div>
+
+  <% bands_and_bandwidths.each do |key, label| %>
+    <div class="rx-power-input">
+      POWER <%= label %>:
+      <%= text_field_tag "rx_power_#{key}", "" %>
+    </div>
+  <% end %>
+
+  <br>
+  <div class="title" style="font-weight: bold; font-size: 17px; margin-bottom: 5px;">
+    <%= 'Frequencies:' %>
+  </div>
+  <% render_frequency_checkboxes("2", "rx", frequencies_2) %>
+  <% render_frequency_checkboxes("5", "rx", frequencies_5) %>
+  <% render_frequency_checkboxes("6", "rx", frequencies_6) %>
+  <br>
+  <%= submit_tag 'Generate File', class: 'btn btn-primary' %>
+<% end %>
+
