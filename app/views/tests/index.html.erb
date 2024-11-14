@@ -1,29 +1,38 @@
-<!-- app/views/tests/index.html.erb -->
-<h1>Test Index</h1>
+<h1 class="text-center my-4">Test Index</h1>
 
+<!-- Partial for file selection and serial number input -->
 <%= render partial: 'tests/run_test_page', locals: { files: @files } %>
 
-<table border="1" style="border-collapse: collapse; width: 300px;">
-  <tr>
-    <th style="border: 1px solid black; padding: 8px;">Test Mode</th>
-    <th style="border: 1px solid black; padding: 8px;">wl0</th>
-    <th style="border: 1px solid black; padding: 8px;">wl1</th>
-    <th style="border: 1px solid black; padding: 8px;">wl2</th>
-  </tr>
-  <tr>
-    <td style="border: 1px solid black; padding: 8px; text-align: center; background-color: <%= @results["mode"] == 'OK' ? 'green' : 'red' %>; color: white;">
-      <%= @results["mode"] %>
-    </td>
-    <td style="border: 1px solid black; padding: 8px; text-align: center; background-color: <%= @results["wl0"] == 'OK' ? 'green' : 'red' %>; color: white;">
-      <%= @results["wl0"] %>
-    </td>
-    <td style="border: 1px solid black; padding: 8px; text-align: center; background-color: <%= @results["wl1"] == 'OK' ? 'green' : 'red' %>; color: white;">
-      <%= @results["wl1"] %>
-    </td>
-    <td style="border: 1px solid black; padding: 8px; text-align: center; background-color: <%= @results["wl2"] == 'OK' ? 'green' : 'red' %>; color: white;">
-      <%= @results["wl2"] %>
-    </td>
-  </tr>
+<!-- Table to display results -->
+<table class="table table-bordered table-striped table-hover mx-auto my-4" style="max-width: 800px;">
+  <thead class="thead-light">
+    <tr>
+      <th scope="col" class="text-center">Test Mode</th>
+      <th scope="col" class="text-center">wl0</th>
+      <th scope="col" class="text-center">wl1</th>
+      <th scope="col" class="text-center">wl2</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="text-center <%= @results["mode"] == 'OK' ? 'bg-success text-white' : 'bg-danger text-white' %>">
+        <%= @results["mode"] %>
+      </td>
+      <td class="text-center <%= @results["wl0"] == 'OK' ? 'bg-success text-white' : 'bg-danger text-white' %>">
+        <%= @results["wl0"] %>
+      </td>
+      <td class="text-center <%= @results["wl1"] == 'OK' ? 'bg-success text-white' : 'bg-danger text-white' %>">
+        <%= @results["wl1"] %>
+      </td>
+      <td class="text-center <%= @results["wl2"] == 'OK' ? 'bg-success text-white' : 'bg-danger text-white' %>">
+        <%= @results["wl2"] %>
+      </td>
+    </tr>
+  </tbody>
 </table>
 
-<%= button_to "Radios Verificationrails ", { controller: 'tests', action: 'check_radios' }, method: :post, id: "run-script-button" %>
+<!-- Buttons for test actions -->
+<div class="text-center my-4">
+  <%= button_to "Radios Verification", { controller: 'tests', action: 'check_radios' }, method: :post, class: 'btn btn-warning btn-lg mx-2' %>
+  <%= button_to "Apply Test Mode", { controller: 'tests', action: 'test_mode' }, method: :post, class: 'btn btn-info btn-lg mx-2' %>
+</div>

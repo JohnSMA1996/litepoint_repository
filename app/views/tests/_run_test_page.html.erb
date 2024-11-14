@@ -1,16 +1,23 @@
-<!-- app/views/tests/_run_test_page.html.erb -->
 <% if files.present? %>
-  <%= form_tag tests_path, method: :post do %>
-    <label for="file_dropdown">Select a file:</label>
-    <%= select_tag 'file', options_for_select(files), id: 'file_dropdown' %>
+  <div class="container">
+    <%= form_tag tests_path, method: :post do %>
+      <div class="form-group">
+        <label for="file_dropdown">Select a file:</label>
+        <%= select_tag 'file', options_for_select(files), id: 'file_dropdown', class: 'form-control' %>
+      </div>
 
-    <!-- Add input fields for serial number and description -->
-    <%= label_tag 'serial_number', 'Serial Number:' %>
-    <%= text_field_tag 'serial_number' %>
+      <!-- Serial number and description -->
+      <div class="form-group">
+        <%= label_tag 'serial_number', 'Serial Number:' %>
+        <%= text_field_tag 'serial_number', nil, class: 'form-control' %>
+      </div>
 
-    <%= label_tag 'description', 'Description:' %>
-    <%= select_tag 'description', options_for_select(['D222AH', 'XSR250GK', 'XSR240LKR']) %>
+      <div class="form-group">
+        <%= label_tag 'description', 'Description:' %>
+        <%= select_tag 'description', options_for_select(['D222AH', 'XSR250GK', 'XSR240LNR', 'XSR140LNR']), class: 'form-control' %>
+      </div>
 
-    <%= submit_tag 'Run Test', class: 'btn btn-primary' %>
-  <% end %>
+      <%= submit_tag 'Run Test', class: 'btn btn-primary btn-lg' %>
+    <% end %>
+  </div>
 <% end %>

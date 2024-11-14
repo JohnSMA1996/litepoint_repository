@@ -1,7 +1,7 @@
-<%= form_with(model: unit, local: true, multipart: true) do |form| %>
+<%= form_with(model: unit, local: true, multipart: true, class: "form-container") do |form| %>
   <% if @unit.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@unit.errors.count, "error") %> prohibited this unit from being saved:</h2>
+    <div class="alert alert-danger" id="error_explanation">
+      <h4 class="alert-heading"><%= pluralize(@unit.errors.count, "error") %> prevented this unit from being saved:</h4>
       <ul>
         <% @unit.errors.full_messages.each do |message| %>
           <li><%= message %></li>
@@ -10,22 +10,22 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :serial_number, style: "display: block" %>
-    <%= form.number_field :serial_number %>
+  <div class="form-group mb-3">
+    <%= form.label :serial_number, class: "form-label" %>
+    <%= form.number_field :serial_number, class: "form-control" %>
   </div>
 
-  <div>
-    <%= form.label :description, style: "display: block" %>
-    <%= form.select :description, ['D222AH', 'XSR250GK', 'XSR240LKR'] %>
+  <div class="form-group mb-3">
+    <%= form.label :description, class: "form-label" %>
+    <%= form.select :description, ['D222AH', 'XSR250GK', 'XSR240LNR', 'XSR140LNR'], {}, class: "form-select" %>
   </div>
 
-  <div>
-    <%= form.label :text_file, style: "display: block" %>
-    <%= form.file_field :text_file %>
+  <div class="form-group mb-3">
+    <%= form.label :text_file, class: "form-label" %>
+    <%= form.file_field :text_file, class: "form-control" %>
   </div>
 
-  <div>
-    <%= form.submit "Create Unit" %>
+  <div class="form-group mt-4">
+    <%= form.submit "Create Unit", class: "btn btn-primary w-100" %>
   </div>
 <% end %>

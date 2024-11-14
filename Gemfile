@@ -27,6 +27,10 @@ gem "stimulus-rails"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 
+# PDF Files
+gem 'prawn'
+gem 'prawn-table'
+
 
 gem 'roo', '~> 2.7', '>= 2.7.1'
 

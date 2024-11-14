@@ -16,7 +16,6 @@ class TestsController < ApplicationController
 			wl2: '?'
 		}
 		Rails.logger.debug("Results in index: #{@results.inspect}")
-
 	end
 
 	def check_radios
@@ -83,9 +82,43 @@ class TestsController < ApplicationController
 		redirect_to action: :index
 	end
 		
+	def test_mode
+		begin
+			# Connect via Telnet
+			telnet = Net::Telnet::new(
+				'Host' => '192.168.1.1',
+				'Timeout' => 10,
+				'Prompt' => /[$%#>] \z/n
+			)
 
+			telnet.login('admin', 'admin') do |c|
+				print c
+			end
 
-	private
+			telnet.cmd("sh") do |c|
+				print c
+			end
+
+			output = ""
+			telnet.cmd('echo "wlFeature=2" > /proc/nvram/set') do |c|
+				output << c
+				print c
+			end
+			output = ""
+			telnet.cmd('reboot') do |c|
+				output << c
+				print c
+			end
+
+		rescue => e
+			Rails.logger.error("Telnet connection failed: #{e.message}")
+		end
+	
+		# Redirect to index action
+		redirect_to action: :index
+	end
+
+	#private
 
 	def folder_contents(path)
 		unless File.directory?(path)
@@ -104,6 +137,7 @@ class TestsController < ApplicationController
 	end
 
 	def create
+		puts "Create action called"
 		# Get the selected file from the form
 		file = params[:file]
 
@@ -130,8 +164,14 @@ class TestsController < ApplicationController
 	end
 
 	def generate_file
-		file_content = generate_file_logic()
-  	end
+		begin
+			file_content = generate_file_logic
+			send_data file_content, filename: 'generated_test_file.txt', type: 'text/plain'
+		rescue StandardError => e
+			flash[:error] = "Error generating file: #{e.message}"
+			redirect_to new_test_path
+		end
+	end
 	  
 private
 
@@ -161,6 +201,39 @@ private
 		result
 	end
 
+	def process_params(verify, mcs, bands, param_prefix, freq_prefix, power_prefix)
+		verify.gsub!(/(>DATA_RATE \[String\]  = MCS).*/, "\\1#{mcs}")
+		#puts mcs
+		bands&.each do |band|
+			param_bw = :"#{band}_#{param_prefix}"
+			#puts param_bw
+			params[param_bw]&.each do |bw|
+				verify.gsub!(/(>BSS_BANDWIDTH \[String\]  = BW-).*/, "\\1#{bw}")
+				param_freq = :"#{freq_prefix}_#{band}_#{bw}"
+				#puts param_freq
+				params[param_freq]&.each do |freq|
+					param_power = :"#{power_prefix}_#{band}_#{bw}"
+					verify.gsub!(/(>#{power_prefix.upcase}_DBM \[Double\]  = )-?\d+/) { "#{$1}#{params[param_power]}" }
+					puts param_power
+					if power_prefix.upcase == 'TX_POWER'
+						power_interval = [params[param_power].to_i - 2, params[param_power].to_i + 2]
+						#puts power_interval
+						verify.gsub!(/(<POWER_DBM_RMS_AVG_S1 \[Double\]  = ).*/, "\\1< #{power_interval[0]}, #{power_interval[1]}>")
+					end
+					#puts freq
+					verify.gsub!(/(>BSS_FREQ_MHZ_PRIMARY \[Integer\]  = ).*/, "\\1#{freq}")
+					verify.gsub!(/(>CH_FREQ_MHZ \[Integer\]  = ).*/, "\\1#{freq}")
+					#puts verify
+					(1..4).each do |i|
+						verify.gsub!(/(>ANT#{i} \[Integer\]  = ).*/, "\\11")
+						File.open(@file_path, "a") { |file| file.write(verify) }
+						verify.gsub!(/(>ANT#{i} \[Integer\]  = ).*/, "\\10")
+					end
+				end
+			end
+		end
+	end
+	
 	def generate_file_logic()
 
 @initialize_test = <<END
@@ -452,49 +525,16 @@ END
 		@initialize_test["FC_WLAN_BRCM_General_TELNET_config.ini"] = params[:config_file]
 		@initialize_test["PATHLOSS_7G_8ANT_12092023.csv"] = params[:path_loss_file]
 
-		File.open(@file_path, "w") { |file| file.puts "Configuração Teste Litepoint" }
-		File.open(@file_path, "w") do |file|  # Use "w" instead of "a" to overwrite the file
-			file.write(@initialize_test)  # Write the string to the file
+		# Initialize the file with "w" mode
+		File.open(@file_path, "w") do |file|
+			file.puts "Configuração Teste Litepoint"
+			file.write(@initialize_test)
 		end
-
-		def process_params(verify, mcs, bands, param_prefix, freq_prefix, power_prefix)
-			verify.gsub!(/(>DATA_RATE \[String\]  = MCS).*/, "\\1#{mcs}")
-		  
-			bands&.each do |band|
-			  param_bw = :"#{band}_#{param_prefix}"
-			  params[param_bw]&.each do |bw|
-				verify.gsub!(/(>BSS_BANDWIDTH \[String\]  = BW-).*/, "\\1#{bw}")
-		  
-				param_freq = :"#{freq_prefix}_#{band}_#{bw}"
-		  
-				params[param_freq]&.each do |freq|
-				  param_power = :"#{power_prefix}_#{band}_#{bw}"
-				  #verify.gsub!(/(>#{power_prefix.upcase}_DBM \[Double\]  = )\d+/, "\\1#{params[param_power]}")
-				  verify.gsub!(/(>#{power_prefix.upcase}_DBM \[Double\]  = )-?\d+/) { "#{$1}#{params[param_power]}" }
-
-				  if power_prefix.upcase == 'TX_POWER'
-					power_interval = [params[param_power].to_i - 2, params[param_power].to_i + 2]
-					verify.gsub!(/(<POWER_DBM_RMS_AVG_S1 \[Double\]  = ).*/, "\\1< #{power_interval[0]}, #{power_interval[1]}>")
-				  end
-		  
-				  verify.gsub!(/(>BSS_FREQ_MHZ_PRIMARY \[Integer\]  = ).*/, "\\1#{freq}")
-				  verify.gsub!(/(>CH_FREQ_MHZ \[Integer\]  = ).*/, "\\1#{freq}")
-		  
-				  (1..4).each do |i|
-					verify.gsub!(/(>ANT#{i} \[Integer\]  = ).*/, "\\11")
-					File.open(@file_path, "a") { |file| file.write(verify) }
-					verify.gsub!(/(>ANT#{i} \[Integer\]  = ).*/, "\\10")
-				  end
-				end
-			  end
-			end
-		  end
-		  
-		  
-		  process_params(@tx_verify, params[:mcs_tx], params[:bands], 'bw_tx', 'tx_frequencies', 'tx_power')
-		  process_params(@rx_verify, params[:mcs_rx], params[:bands_rx], 'bw_rx', 'rx_frequencies', 'rx_power')
+		    
+		process_params(@tx_verify, params[:mcs_tx], params[:bands], 'bw_tx', 'tx_frequencies', 'tx_power')
+		process_params(@rx_verify, params[:mcs_rx], params[:rx_bands], 'bw_rx', 'rx_frequencies', 'rx_power')
 		  
 		File.open(@file_path, "a") { |file| file.write(@ending) }
 	end
+
 end
-  

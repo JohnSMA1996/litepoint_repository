@@ -1,28 +1,31 @@
-<p style="color: green"><%= notice %></p>
+<p class="text-success"><%= notice %></p>
 
-<h1>Units</h1>
+<div class="container">
+  <h1 class="my-4">Units</h1>
 
-<table class="table table-dark table-hover table-striped">
-  <thead>
-    <tr>
-      <th scope="col">SN</th>
-      <th scope="col">Description</th>
-      <th scope="col">Function</th>
-      <th scope="col">Delete</th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <% @units.each do |unit| %>
+  <table class="table table-hover table-bordered" style="background-color: #ffffff; border-color: #c0c0c0;">
+    <thead style="background-color: #e0e0e0;"> <!-- Medium gray header -->
       <tr>
-        <td><%=unit.serial_number%></td>
-        <td><%=unit.description%></td>
-        <td><%= link_to "Show this unit", unit %></td>
-        <td><%= button_to "Destroy this unit", unit, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-danger" %></td>
+        <th scope="col">SN</th>
+        <th scope="col">Description</th>
+        <th scope="col">Function</th>
+        <th scope="col">Delete</th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
 
-<%= link_to "New unit", new_unit_path, class:"btn btn-primary" %>
+    <tbody>
+      <% @units.each do |unit| %>
+        <tr>
+          <td><%= unit.serial_number %></td>
+          <td><%= unit.description %></td>
+          <td><%= link_to "Show this unit", unit, class: "btn btn-info btn-sm" %></td>
+          <td><%= button_to "Destroy", unit, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-danger btn-sm" %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 
+  <div class="my-3">
+    <%= link_to "New unit", new_unit_path, class: "btn btn-primary" %>
+  </div>
+</div>
