@@ -10,60 +10,113 @@
     <p><strong>Description:</strong> <%= @unit.description %></p>
   </div>
 
-  <!-- File Upload Form Section -->
-  <%= form_for @unit, html: { multipart: true, class: 'text-center' } do |f| %>
-    <div class="form-group mb-3">
-      <%= f.file_field :text_file, class: "form-control-file" %>
-    </div>
-    <%= f.submit "Import", class: "btn btn-primary btn-lg mb-4" %>
-  <% end %>
+<%# <!-- File Upload Form Section --> %>
+<%# <%= form_for @unit, html: { multipart: true, class: 'text-center' } do |f| %>
+<%#   <div class="form-group mb-3"> %>
+<%#     <%= f.file_field :text_file, class: "form-control-file" %>
+<%#   </div> %>
+<%#   <%= f.submit "Import", class: "btn btn-primary btn-lg mb-4" %>
+<%# <% end %>
+
 
   <!-- Download Links Section -->
   <% if @unit.text_file.attached? %>
+    <h2 class="text-center my-4">Wi-Fi Test Results</h2>
     <div class="d-flex justify-content-center mb-4">
       <div class="btn-group">
-        <%= link_to 'Download Log Text File', download_unit_path(@unit), class: 'btn btn-secondary btn-lg' %>
+        <%= link_to 'Download Text File', download_unit_path(@unit), class: 'btn btn-secondary btn-lg' %>
         <%= link_to 'Download Excel File', download_excel_unit_path(@unit), class: 'btn btn-success btn-lg' %>
         <%= link_to 'Download PDF', combined_pdf_unit_path(@unit), class: 'btn btn-primary btn-lg' %>
       </div>
     </div>
   <% end %>
 
-    <!-- Action Buttons Section -->
-  <div class="text-center mt-4">
-    <%= link_to "Edit this unit", edit_unit_path(@unit), class:"btn btn-secondary mr-2" %>
-    <%= link_to "Back to units", units_path, class:"btn btn-secondary" %>
-    <%= button_to "Destroy this unit", @unit, method: :delete, data: { confirm: 'Are you sure?' }, class:"btn btn-danger ml-2" %>
-  </div>
+  <% if @unit.second_text_file.attached? %>
+    <h2 class="text-center my-4">BLE+ZigBee Test Results</h2>
+    <div class="d-flex justify-content-center mb-4">
+      <div class="btn-group">
+        <%= link_to 'Download Text File', rails_blob_path(@unit.second_text_file), class: 'btn btn-secondary btn-lg' %>
+        <%= link_to 'Download Excel File', download_excel_file2_unit_path(@unit), class: 'btn btn-success btn-lg' %>
+        <%= link_to 'Download PDF', combined_pdf2_unit_path(@unit), class: 'btn btn-primary btn-lg' %>
+      </div>
+    </div>
+  <% end %>
 
+<div class="row">
+  <!-- First Table -->
+  <% if @extracted_data.present? %>
+    <div class="col-6">
+      <h3 class="text-center">Wi-Fi</h3>
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col">Test</th>
+              <th scope="col">Name</th>
+              <th scope="col">Range</th>
+              <th scope="col">Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% grouped_data = @extracted_data[0...-4].group_by { |data| data[:test] } %>
+            <% colors = ['table-primary', 'table-secondary'] %>
+            <% grouped_data.each_with_index do |(test, rows), index| %>
+              <% row_class = colors[index % 2] %>
+              <% rows.each do |data| %>
+                <tr class="<%= row_class %>">
+                  <td><%= data[:test] %></td>
+                  <td><%= data[:name] %></td>
+                  <td><%= data[:range] %></td>
+                  <td class="<%= calculate_value_class(data[:value], data[:range], data[:name]) %>">
+                    <%= data[:value] %>
+                  </td>
+                </tr>
+              <% end %>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% end %>
 
-  <!-- Test Results Table Section -->
-  <div class="table-responsive">
-    <h2 class="text-center my-4">Test Results</h2>
-    <table class="table table-bordered table-hover table-striped mx-auto w-75">
-      <thead class="thead-light">
-        <tr>
-          <th scope="col">Test</th>
-          <th scope="col">Name</th>
-          <th scope="col">Range</th>
-          <th scope="col">Value</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @extracted_data[0...-4].each do |data| %>
-          <tr>
-            <td><%= data[:test] %></td>
-            <td><%= data[:name] %></td>
-            <td><%= data[:range] %></td>
-            <td><%= data[:value] %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  </div>
+  <!-- Second Table -->
+  <% if @extracted_data_second_file.present? %>
+    <div class="col-6">
+      <h3 class="text-center">BLE+ZigBee</h3>
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col">Test</th>
+              <th scope="col">Name</th>
+              <th scope="col">Range</th>
+              <th scope="col">Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% grouped_data = @extracted_data_second_file.group_by { |data| data[:test] } %>
+            <% grouped_data.each_with_index do |(test, rows), index| %>
+              <% row_class = colors[index % 2] %>
+              <% rows.each do |data| %>
+                <tr class="<%= row_class %>">
+                  <td><%= data[:test] %></td>
+                  <td><%= data[:name] %></td>
+                  <td><%= data[:range] %></td>
+                  <td class="<%= calculate_value_class(data[:value], data[:range], data[:name]) %>">
+                    <%= data[:value] %>
+                  </td>
+                </tr>
+              <% end %>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% end %>
+</div>
 
   <!-- Action Buttons Section -->
-  <div class="text-center mt-4">
+<div class="text-center mt-4">
     <%= link_to "Edit this unit", edit_unit_path(@unit), class:"btn btn-secondary mr-2" %>
     <%= link_to "Back to units", units_path, class:"btn btn-secondary" %>
     <%= button_to "Destroy this unit", @unit, method: :delete, data: { confirm: 'Are you sure?' }, class:"btn btn-danger ml-2" %>

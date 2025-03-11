@@ -21,11 +21,18 @@
   </div>
 
   <div class="form-group mb-3">
-    <%= form.label :text_file, class: "form-label" %>
+    <%= form.label :text_file, "Wi-Fi Text File", class: "form-label" %>
     <%= form.file_field :text_file, class: "form-control" %>
+  </div>
+
+  <div class="form-group mb-3">
+    <%= form.label :second_text_file, "BLE+ZigBee Text File", class: "form-label" %>
+    <%= form.file_field :second_text_file, class: "form-control" %>
   </div>
 
   <div class="form-group mt-4">
     <%= form.submit "Create Unit", class: "btn btn-primary w-100" %>
   </div>
 <% end %>
+
+#TODO when creating new unit and alread used serial number is entered it should add file if missing or give some error message

@@ -118,7 +118,49 @@ class TestsController < ApplicationController
 		redirect_to action: :index
 	end
 
-	#private
+	def run_ble_test
+			# Set the path to the folder containing the files
+			folder_path = 'C:/LitePoint/IQfact_plus/IQfact+_SiLabs_RAIL_Combo_3.3.0_Lock/bin'
+			
+			# Get the contents of the folder
+			folder_contents(folder_path)
+			
+			# Render the view
+			render :run_ble_test
+	end
+
+	def run_ble_test_action
+		# Your logic for running the BLE test
+		# For example, you can process the selected file and other form inputs here
+		selected_file = params[:file]
+		serial_number = params[:serial_number]
+		description = params[:description]
+			force_replace = params[:force_replace] == 'true'
+
+			# Check if a unit with the given serial number already exists and has files attached
+			existing_unit = Unit.find_by(serial_number: serial_number)
+			if existing_unit && (existing_unit.text_file.attached? || existing_unit.second_text_file.attached?)
+				unless force_replace
+					flash[:alert] = 'A unit with this serial number already has files attached. Do you want to replace the existing files?'
+					redirect_to unit_path(existing_unit) and return
+				end
+			end
+
+		# BLE test logic here
+			result = execute_ble_test(selected_file)
+			# Create a new unit based on the result
+			if result.successful?
+			@unit = Unit.new(serial_number: serial_number, description: description)
+			@unit.second_text_file.attach(io: File.open('C:/LitePoint/IQfact_plus/IQfact+_BRCM_6726_Telnet_5.0.0.5_Lock/bin/Log/logOutput.txt'), filename: "#{serial_number}_log.txt")
+			@unit.save
+
+		# Redirect or render as needed
+		redirect_to unit_path(@unit), notice: 'Test successful. Unit created.'
+			else
+				flash[:alert] = 'Test failed.'
+				redirect_to tests_path
+			end
+	end
 
 	def folder_contents(path)
 		unless File.directory?(path)
@@ -166,10 +208,12 @@ class TestsController < ApplicationController
 	def generate_file
 		begin
 			file_content = generate_file_logic
+			flash[:notice] = 'File generated successfully.'
 			send_data file_content, filename: 'generated_test_file.txt', type: 'text/plain'
+			return
 		rescue StandardError => e
 			flash[:error] = "Error generating file: #{e.message}"
-			redirect_to new_test_path
+			redirect_to new_test_tests_path and return
 		end
 	end
 	  
@@ -181,6 +225,32 @@ private
 
 		begin
 			Dir.chdir('C:\\LitePoint\\IQfact_plus\\IQfact+_BRCM_6726_Telnet_5.0.0.5_Lock\\bin')
+			command = "IQfactRun_Console.exe -run scripts/#{file}"
+			command_thread = Thread.new do
+			system(command)
+			result.successful = true
+			end
+		rescue StandardError => e
+			puts "Error during test execution: #{e.message}"
+			result.successful = false
+		end
+
+		sleep(2)
+
+		# Simulate pressing the "x" key
+		shell = WIN32OLE.new("WScript.Shell")
+		shell.SendKeys("x")
+
+		puts "Test executed."
+		result
+	end
+
+	def execute_ble_test(file)
+		puts "Running test..."
+		result = OpenStruct.new(successful?: true)
+
+		begin
+			Dir.chdir('C:\\LitePoint\\IQfact_plus\\IQfact+_SiLabs_RAIL_Combo_3.3.0_Lock\\bin')
 			command = "IQfactRun_Console.exe -run scripts/#{file}"
 			command_thread = Thread.new do
 			system(command)

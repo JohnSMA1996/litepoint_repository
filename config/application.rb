@@ -13,8 +13,7 @@ module Litepoint
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
-
-
+    
     config.after_initialize do
       Mime::Type.register "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", :xlsx
     end
