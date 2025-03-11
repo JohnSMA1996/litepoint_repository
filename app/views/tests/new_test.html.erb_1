@@ -32,7 +32,7 @@
   }
 </style>
 
-<!--TODO Refazer de modo às coisas não aparecerem se nãos seleccionadas-->
+<!- Refazer de modo às coisas não aparecerem se nãos seleccionadas-->
 
 <% def render_frequency_checkboxes(band, direction, frequencies) %>
   <h3><%= "#{band}-GHz #{direction.upcase}" %></h3>

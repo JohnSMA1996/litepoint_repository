@@ -1,0 +1,23 @@
+<h1 class="text-center my-4">Test Index</h1>
+
+<!-- app/views/tests/run_ble_test.html.erb -->
+<%= form_tag run_ble_test_action_tests_path, method: :post do %>
+  <div class="form-group">
+    <label for="file_dropdown">Select a file:</label>
+    <%= select_tag 'file', options_for_select(@files), id: 'file_dropdown', class: 'form-control' %>
+  </div>
+
+  <!-- Serial number and description -->
+
+  <div class="form-group">
+    <label for="serial_number">Serial Number:</label>
+    <%= text_field_tag 'serial_number', nil, id: 'serial_number', class: 'form-control' %>
+  </div>
+
+  <div class="form-group">
+    <%= label_tag 'description', 'Description:' %>
+    <%= select_tag 'description', options_for_select(['D222AH', 'XSR250GK', 'XSR240LNR', 'XSR140LNR']), class: 'form-control' %>
+  </div>
+
+  <%= submit_tag 'Run Test', class: 'btn btn-primary btn-lg' %>
+<% end %>

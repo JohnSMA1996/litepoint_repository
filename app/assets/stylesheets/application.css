@@ -161,3 +161,157 @@ h1 {
 .custom-button:hover {
   background-color: #45a049;
 }
+
+
+
+/* General Styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+
+.page-title {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Form Container */
+.form-container {
+  margin: auto;
+  width: 80%;
+}
+
+/* Grid Layout for Units */
+.units-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+/* Unit Card */
+.unit-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  background: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out;
+}
+
+.unit-card:hover {
+  transform: scale(1.02);
+}
+
+.unit-details {
+  margin-bottom: 15px;
+}
+
+/* Unit Actions */
+.unit-actions {
+  text-align: center;
+}
+
+.unit-actions .btn {
+  margin: 5px 0;
+}
+
+.unit-checkbox {
+  margin-right: 8px;
+}
+
+.checkbox-label {
+  margin-left: 5px;
+}
+
+/* Divider */
+.unit-divider {
+  border: 0;
+  height: 1px;
+  background: #ddd;
+  margin: 10px 0;
+}
+
+/* Form Actions */
+.form-actions {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.form-actions .btn {
+  padding: 10px 20px;
+}
+
+
+/* Checkbox Container */
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* Space between the checkbox and label */
+  margin-top: 10px;
+}
+
+/* Custom Checkbox Styling */
+.unit-checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #007bff;
+  border-radius: 4px;
+  appearance: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.unit-checkbox:checked {
+  background-color: #007bff;
+  border-color: #0056b3;
+}
+
+.unit-checkbox:checked::after {
+  content: '✓';
+  color: white;
+  display: block;
+  text-align: center;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.checkbox-label {
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: #333;
+}
+
+.checkbox-container:hover .unit-checkbox {
+  border-color: #0056b3;
+}
+
+#flash-messages {
+  margin: 20px auto;
+  width: 90%;
+  max-width: 800px;
+}
+
+.flash {
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 16px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.flash.notice {
+  background-color: #d4edda; /* Light green */
+  color: #155724;           /* Dark green */
+  border: 1px solid #c3e6cb;
+}
+
+.flash.error {
+  background-color: #f8d7da; /* Light red */
+  color: #721c24;           /* Dark red */
+  border: 1px solid #f5c6cb;
+}
+

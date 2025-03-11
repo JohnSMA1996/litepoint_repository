@@ -1,21 +1,26 @@
-<h1>Search Results</h1>
+<h1 class="page-title">Search Results</h1>
 
-<%= form_tag(compare_units_path, method: :get, id: 'compareForm') do %>
-  <% @units.each do |unit| %>
-    <div class="unit-container">
-      <%= render unit %>
-      <hr class="unit-divider">
-      <%= link_to "Show this unit", unit_path(unit), class: 'btn btn-primary' %>
-      <hr class="unit-divider">
-      <%= check_box_tag 'selected_units[]', unit.id, false, class: 'unit-checkbox' %>
-      <hr class="unit-divider">
-      <%= label_tag "selected_units_#{unit.id}", 'Select for comparison' %>
-    </div>
-    <hr class="unit-divider">
-  <% end %>
-  <%= submit_tag 'Compare Selected Units', id: 'compareSelected', class: 'btn btn-primary' %>
+<%= form_tag(compare_units_path, method: :get, id: 'compareForm', class: 'form-container') do %>
+  <div class="units-grid">
+    <% @units.each do |unit| %>
+      <div class="unit-card">
+        <div class="unit-details">
+          <%= render unit %>
+        </div>
+        <div class="unit-actions">
+          <%= link_to "Show this unit", unit_path(unit), class: 'btn btn-primary btn-sm' %>
+          <div class="checkbox-container">
+            <%= check_box_tag 'selected_units[]', unit.id, false, class: 'unit-checkbox' %>
+            <%= label_tag "selected_units_#{unit.id}", 'Select for comparison', class: 'checkbox-label' %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+  <div class="form-actions">
+    <%= submit_tag 'Compare Selected Units', id: 'compareSelected', class: 'btn btn-success btn-lg' %>
+  </div>
 <% end %>
-
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
@@ -25,4 +30,4 @@
   });
 </script>
 
-<!-- TODO Compare Results between units -->
+

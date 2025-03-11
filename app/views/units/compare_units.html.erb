@@ -1,33 +1,100 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Test Results</title>
   <style>
-    table {
-      width: 100%;
-      max-width: 1000px;
-      margin: auto;
-      border-collapse: collapse;
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+      color: #333;
     }
+
+    h1 {
+      text-align: center;
+      margin: 20px 0;
+      color: #0056b3;
+    }
+
+        .table-success {
+      background-color: #d4edda; /* Light green */
+      color: #155724; /* Dark green text */
+    }
+
+    .table-danger {
+      background-color: #f8d7da; /* Light red */
+      color: #721c24; /* Dark red text */
+    }
+
+    .table-default {
+      background-color: #ffffff; /* White */
+      color: #333333; /* Default text color */
+    }
+
+    table {
+      width: 90%;
+      max-width: 1000px;
+      margin: 20px auto;
+      border-collapse: collapse;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+    }
+
     th, td {
-      border: 1px solid black;
-      padding: 8px;
+      border: 1px solid #ddd;
+      padding: 10px;
       text-align: left;
     }
+
     th {
+      background-color: #0056b3;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    tr:nth-child(even) {
       background-color: #f2f2f2;
     }
+
+    tr:hover {
+      background-color: #e6f7ff;
+    }
+
+    td {
+      text-align: center;
+    }
+
+    @media screen and (max-width: 768px) {
+      table {
+        width: 100%;
+        font-size: 14px;
+      }
+
+      th, td {
+        padding: 8px;
+      }
+    }
   </style>
-</head>
-<body>
   <h1>Test Results</h1>
+  <body>
+    <div class="button-container">
+    <%= link_to 'Download Excel', download_comparison_excel_path(selected_units: @selected_units.map(&:id)), 
+                class: 'btn btn-primary' %>
+    <%= link_to 'Download PDF', download_comparison_pdf_path(selected_units: @selected_units.map(&:id)), 
+                class: 'btn btn-danger' %>
+  </div>
   <table>
     <thead>
       <tr>
         <th>Test</th>
         <th>Name</th>
         <th>Range</th>
-        <% @selected_units.each_with_index do |unit, index| %>
-          <th>Value <%= index + 1 %></th>
+        <% @selected_units.each do |unit| %>
+          <th><%= unit.serial_number %></th>
         <% end %>
       </tr>
     </thead>
@@ -39,14 +106,16 @@
           <td><%= name %></td>
           <td><%= range %></td>
           <% @selected_units.each do |unit| %>
-            <td><%= values[unit.id] || "" %></td>
+            <td class="<%= calculate_value_class(values[unit.id], range, name) %>">
+              <%= "#{values[unit.id]}" || "" %>
+            </td>
           <% end %>
-          <%# @selected_units.each_with_index do |unit, index| %>
-            <%#<td><%= values[index] || ""</td>%>
-          <%# end %>
         </tr>
       <% end %>
     </tbody>
   </table>
 </body>
+
 </html>
+
+#TODO COMPARE BLE+ZigBee files add an option
